@@ -1,0 +1,169 @@
+ThreadLocal (线程局部变量)
+为每一个使用该变量的线程提供一个变量值的副本，使每个线程都可以独立地改变自己的
+副本，而不会和其他线程冲突.
+主内存区: 存放公共资源
+工作内存区: 每个线程自己的工作区，从主内存区拷贝公共资源进来，完成之后再更新到主
+内存区.
+
+ThreadLocal的方法
+initialVale(): protected方法，为了子类重写而实现的，该方法返回当前线程在该局部变量的初始值，这个方法是一个延迟
+调用方法，在一个线程第一次调用get()或set()方法时执行，并且只执行一次.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ThreadLocal的原理
+
+ThreadLocal是如何做到为每一个线程维护变量的副本的呢？其实实现的思路很简单，在ThreadLocal类中有一个Map，用于存储每一个线程的变量的副本。比如下面的示例实现：
+
+
+
+public class ThreadLocal
+{
+　private Map values = Collections.synchronizedMap(new HashMap());
+　public Object get()
+　{
+　　Thread curThread = Thread.currentThread(); 
+　　Object o = values.get(curThread); 
+　　if (o == null && !values.containsKey(curThread))
+　　{
+　　　o = initialValue();
+　　　values.put(curThread, o); 
+　　}
+　　return o; 
+　}
+
+　public void set(Object newValue)
+　{
+　　values.put(Thread.currentThread(), newValue);
+　}
+
+　public Object initialValue()
+　{
+　　return null; 
+　}
+}
+
+
+
+
+ 
+
+ThreadLocal 的使用
+
+使用方法一：
+
+Hibernate的文档时看到了关于使用ThreadLocal管理多线程访问的部分。具体代码如下 
+
+
+public class HibernateUtil {
+    private static Log log = LogFactory.getLog(HibernateUtil.class);
+    private static final SessionFactory sessionFactory;     //定义SessionFactory
+ 
+    static {
+        try {
+            // 通过默认配置文件hibernate.cfg.xml创建SessionFactory
+            sessionFactory = new Configuration().configure().buildSessionFactory();
+        } catch (Throwable ex) {
+            log.error("初始化SessionFactory失败！", ex);
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
+
+    //创建线程局部变量session，用来保存Hibernate的Session
+    public static final ThreadLocal session = new ThreadLocal();
+ 
+    /**
+     * 获取当前线程中的Session
+     * @return Session
+     * @throws HibernateException
+     */
+    public static Session currentSession() throws HibernateException {
+        Session s = (Session) session.get();
+        // 如果Session还没有打开，则新开一个Session
+        if (s == null) {
+            s = sessionFactory.openSession();
+            session.set(s);         //将新开的Session保存到线程局部变量中
+        }
+        return s;
+    }
+ 
+    public static void closeSession() throws HibernateException {
+        //获取线程局部变量，并强制转换为Session类型
+        Session s = (Session) session.get();
+        session.set(null);
+        if (s != null)
+            s.close();
+    }
+}
+
+
+
+ 
+
+我们逐行分析 
+1。 初始化一个ThreadLocal对象，ThreadLocal有三个成员方法 get()、set()、initialvalue()。 
+    如果不初始化initialvalue，则initialvalue返回null。 
+3。session的get根据当前线程返回其对应的线程内部变量，也就是我们需要的net.sf.hibernate.Session（相当于对应每个数据库连接）.多线程情况下共享数据库链接是不安全的。ThreadLocal保证了每个线程都有自己的s（数据库连接）。 
+5。如果是该线程初次访问，自然，s（数据库连接）会是null，接着创建一个Session，具体就是行6。 
+6。创建一个数据库连接实例 s 
+7。保存该数据库连接s到ThreadLocal中。 
+8。如果当前线程已经访问过数据库了，则从session中get()就可以获取该线程上次获取过的连接实例。
+
+使用方法二
+
+当要给线程初始化一个特殊值时，需要自己实现ThreadLocal的子类并重写该方法，通常使用一个内部匿名类对ThreadLocal进行子类化，EasyDBO中创建jdbc连接上下文就是这样做的：
+
+
+
+ 1 public class JDBCContext{
+ 2  private static Logger logger = Logger.getLogger(JDBCContext.class);
+ 3  private DataSource ds;
+ 4  protected Connection connection;
+ 5  private boolean isValid = true;
+ 6  private static ThreadLocal jdbcContext;
+ 7  
+ 8  private JDBCContext(DataSource ds){
+ 9   this.ds = ds;
+10   createConnection();  
+11  }
+12  public static JDBCContext getJdbcContext(javax.sql.DataSource ds)
+13  {  
+14   if(jdbcContext==null)jdbcContext=new JDBCContextThreadLocal(ds);
+15   JDBCContext context = (JDBCContext) jdbcContext.get();
+16   if (context == null) {
+17    context = new JDBCContext(ds);
+18   }
+19   return context;
+20  }
+21 
+22  private static class JDBCContextThreadLocal extends ThreadLocal {
+23   public javax.sql.DataSource ds;
+24   public JDBCContextThreadLocal(javax.sql.DataSource ds)
+25   {
+26    this.ds=ds;
+27   }
+28   protected synchronized Object initialValue() {
+29    return new JDBCContext(ds);
+30   }
+31  }
+32 }
+
+
+
+
+
+
+

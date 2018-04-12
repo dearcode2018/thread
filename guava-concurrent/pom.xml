@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.hua</groupId>
+		<artifactId>thread-entire</artifactId>
+		<version>0.0.1</version>
+	</parent>	
+	<artifactId>guava-concurrent</artifactId>
+	<packaging>jar</packaging>
+	<name>guava-concurrent</name>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		
+		<thread.version>0.0.1</thread.version>
+		<guava-concurrent.version>r03</guava-concurrent.version>
+		<concurrent.version>0.0.1</concurrent.version>		
+	</properties>
+
+	<dependencies>
+<!-- 		<dependency>
+			<groupId>com.hua</groupId>
+			<artifactId>thread</artifactId>
+			<version>${thread.version}</version>
+		</dependency> -->
+
+		<dependency>
+			<groupId>com.hua</groupId>
+			<artifactId>concurrent</artifactId>
+			<version>${concurrent.version}</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava-concurrent</artifactId>
+			<version>${guava-concurrent.version}</version>
+		</dependency>	
+		
+	</dependencies>
+
+</project>

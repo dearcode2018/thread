@@ -1,0 +1,85 @@
+线程
+1）
+2）线程特性
+① 可见性：java中多个线程之间是不能直接传递数据交互的，只能通过共享变量来实现
+② 有序性
+一个内存中修改共享变量，其他线程应该能够看到被修改后的值，多个线程并发的操作应该是有序的，才能确保共享变量最终有个正确的值
+3）线程四种状态
+就绪(start() ,notify()) --> 运行(run()) --> 挂起(suspend()) - - - > 结束
+4）线程互斥（同步）
+建立线程的互斥，使用synchronized把需要互斥的代码包含起来，并加上一把锁，这把锁必须是线程之间的共享对象.
+/* 一个线程执行互斥代码过程 */
+① 获得同步锁 
+② 清空工作内存（每个线程对应一个工作内存）
+③ 从主内存拷贝副本到工作内存（共享对象在主内存）
+④ 执行互斥代码
+⑤ 将工作内存的结果刷新到主内存
+⑥ 释放同步锁
+结论：线程互斥既确保了多线程的并发有序性，又保证了多线程的内存可见性
+/* 线程同步第二种手段：加volatile */
+在共享对象的属性加上volatile关键字
+private static volatile int a;
+但这种同步手段，只能保证内存的可见性，不能保证并发的有序性.
+5）锁对象
+每个锁对象都有2个队列，一个是就绪队列(也称 锁池)，一个是阻塞队列(等待池)，就绪队列存储了将要获得锁的线程，阻塞队列存储了被阻塞的线程.
+当一个线程被唤醒（notify）之后，才会从阻塞队列进入就绪队列，等待CPU的调度；反之，当一个线程被wait之后，就会进入阻塞队列，等待下一次被唤醒.（线程之间的通信）
+-----
+在很多情况下，仅线程同步是不够的，还需要线程之间协作/通信，确保整个系统流程正常运转.
+/* 生产者-消费者模式（以放、取鸡蛋为例） */
+public class Plate {
+ private List<Object> eggs = new ArrayList<Object>();  
+ // 标志-盘为空
+ private boolean empty = true;
+  // 取鸡蛋
+ public synchronized Object getEgg() {
+	while (empty) {
+	  try {
+			this.wait();
+	    } catch (InterruptedException e) {
+			e.printStackTrace();
+	    }
+	}
+	// 取鸡蛋
+	Object egg = eggs.get(0);
+	// 清空盘子
+	eggs.clear();
+	empty = true;
+	// 唤醒阻塞队列的某线程，使之进入就绪队列
+	this.notify();
+	System.out.println("拿到鸡蛋");
+	return egg;
+ }
+// 放鸡蛋
+public synchronized void putEgg(Object egg) {
+while (!empty) {
+	 try {
+		 	this.wait();
+	    } catch (InterruptedException e) {
+			e.printStackTrace();
+	  	}
+}
+// 放鸡蛋
+eggs.add(egg);
+empty = false;
+// 唤醒阻塞队列的某线程，使之进入就绪队列
+this.notify();
+System.out.println("放入鸡蛋");
+  }
+}
+/* 注意：在调用wait方法的时候，判断语句是while而不是if，因为在某些特定的情况下，线程有可能被假唤醒，使用while会循环检测更稳妥 */
+6）
+7）
+///
+线程与同步方法：
+/* Thread And Synchronized Method */
+1）一个线程在访问一个对象的同步方法时，其他线程可以同时访问这个对象的非同步方法；
+2）一个线程在访问一个对象的同步方法时，其他线程不能同时访问此同步方法
+3）一个线程在访问一个对象的同步方法时，其他线程不能同时访问这个对象的任一个同步方法
+同步方法A中使用了该对象的wait方法，放弃对象锁，其他线程可以访问该对象的其他同步方法，
+直到使用了该对象的notify或notifyAll同步方法A才被唤醒，从而具备运行条件。
+多线程有两种实现方法，分别是继承Thread类与实现Runnable接口
+4）同步的实现方面有两种，分别是synchronized,wait与notify
+线程指在程序执行过程中，能够执行程序代码的一个执行单位，每个程序至少都有一个线程，也就是程序本身。
+5）synchronized与java.util.concurrent.locks.Lock的区别：
+① 相同点：Lock能完成synchroinzed实现的所有功能
+② 不同点：Lock有比synchronized更精确的线程语义和更好的性能；synchronized会自动释放锁，而Lock要求必须在finally块中手动释放锁。
