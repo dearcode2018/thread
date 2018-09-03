@@ -24,8 +24,18 @@ public class WriteService
 	 */
 	public synchronized void write1(final String content)
 	{
+		/*
+		 * 在方法签名上加synchronized关键字
+		 */
 		System.out.println("Current ThreadId1: " + Thread.currentThread().getId());
 		System.out.println("Current ThreadName1: " + Thread.currentThread().getName());
+/*		try
+		{
+			lock.wait();
+		} catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}*/
 		System.out.println("write1: " + content);
 	}
 	
@@ -42,6 +52,8 @@ public class WriteService
 		synchronized (lock)
 		{
 			System.out.println("get lock...");
+			String a = "a";
+			//a.notify();
 		try
 			{
 				/*
@@ -64,4 +76,5 @@ public class WriteService
 			System.out.println("write1: " + content);
 		}
 	}
+	
 }

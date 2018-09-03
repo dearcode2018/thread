@@ -126,7 +126,6 @@ public final class WriteThreadTest extends BaseTest {
 					writeService.write2("abcff");
 				}
 			});
-			
 			Thread t2 = new Thread(new Runnable() {
 				/**
 				 * @description 
