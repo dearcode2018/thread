@@ -24,6 +24,7 @@
 		<module>thread-safety</module>		
 		<module>thread-simulate</module>		
 		<module>thread-spring</module>	
+		<module>thread-spring-boot</module>
 		<module>thread-volatile</module>		
 	</modules>
  

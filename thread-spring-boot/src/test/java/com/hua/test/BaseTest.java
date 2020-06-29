@@ -27,14 +27,6 @@ import com.hua.log.BaseLog;
 @DisplayName("BaseTest")
 public class BaseTest extends BaseLog {
 	
-	public Thread currentThread;
-	
-	public Thread mainThread;
-	
-	public Thread subThread;
-	
-	public Thread guardThread;
-	
 	
 	/**
 	 * 
