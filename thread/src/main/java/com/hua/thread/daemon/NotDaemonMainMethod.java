@@ -110,7 +110,7 @@ public class NotDaemonMainMethod
 		Thread t = new Thread(r);
 		t.setDaemon(false);
 		t.start();
-		Thread.sleep(3000);
+		Thread.sleep(1000);
 		System.out.println("main thread exits");
 	}
 	

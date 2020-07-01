@@ -6,6 +6,8 @@
  */
 package com.hua.thread.account;
 
+import org.junit.jupiter.api.Test;
+
 import com.hua.util.ThreadUtil;
 
 
@@ -65,5 +67,42 @@ public class AccountDriver
 		
 		return flag;
 	}
+	
+	/**
+	 * 
+	 * 描述: 
+	 * @author  qye.zheng
+	 * @return
+	 */
+	public static final boolean simulateNew()
+	{
+		boolean flag = false;
+		try
+		{
+			Account account = new Account();
+			account.setAccountNo("2000545799465");
+			account.setBalance(10.0);
+			
+			// 存钱线程
+			Thread depositThread = new Thread(() -> account.deposit(1.0D), "存钱线程") ;
+			// 取钱线程
+			Thread drawThread = new Thread(() -> account.draw(2.0D), "取钱线程");
+			
+			depositThread.start();
+			
+			drawThread.start();
+			
+			final int second = 5;
+			ThreadUtil.currentThreadSleep(second);
+			
+			flag = true;
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return flag;
+	}
+
 	
 }

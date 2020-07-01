@@ -41,7 +41,7 @@ import com.hua.util.ThreadUtil;
  */
 public final class WaitNotifyTest extends BaseTest {
 
-	private Counter commontObject = new Counter();
+	private Counter commonObject = new Counter();
 	
 	/**
 	 * 
@@ -54,11 +54,11 @@ public final class WaitNotifyTest extends BaseTest {
 		// 线程1 wait，线程2执行完成后notify，线程1继续执行
 		try {
 			// 包含有 wait()，进入阻塞状态，
-			CounterThead counterThead1 = new CounterThead(commontObject, 3);
+			CounterThead counterThead1 = new CounterThead(commonObject, 3);
 			Thread t1 = new Thread(counterThead1);
 			t1.setName("thread-1");
 			// 访问另外一个同步方法，执行完了，notify其他wait的线程
-			CounterThead counterThead2 = new CounterThead(commontObject, 4);
+			CounterThead counterThead2 = new CounterThead(commonObject, 4);
 			Thread t2 = new Thread(counterThead2);
 			t2.setName("thread-2");
 			
@@ -71,8 +71,8 @@ public final class WaitNotifyTest extends BaseTest {
 			
 			t2.start();
 			
-			final int second = 20;
-			ThreadUtil.currentThreadSleep(second);
+			t1.join();
+			t2.join();
 			
 		} catch (Exception e) {
 			log.error("testWaitAndNotify =====> ", e);
@@ -90,11 +90,11 @@ public final class WaitNotifyTest extends BaseTest {
 		// 线程1 wait，线程2执行完成后notify，线程1继续执行
 		try {
 			// 包含有 wait()，进入阻塞状态，
-			CounterThead counterThead1 = new CounterThead(commontObject, 3);
+			CounterThead counterThead1 = new CounterThead(commonObject, 3);
 			Thread t1 = new Thread(counterThead1);
 			t1.setName("thread-1");
 			// 访问另外一个同步方法，执行完了，notify其他wait的线程
-			CounterThead counterThead2 = new CounterThead(commontObject, 4);
+			CounterThead counterThead2 = new CounterThead(commonObject, 4);
 			Thread t2 = new Thread(counterThead2);
 			t2.setName("thread-2");
 			
@@ -107,11 +107,47 @@ public final class WaitNotifyTest extends BaseTest {
 			
 			t2.start();
 			
-			final int second = 20;
-			ThreadUtil.currentThreadSleep(second);
+			t1.join();
+			t2.join();
 			
 		} catch (Exception e) {
 			log.error("testAccessSyncMethod20 =====> ", e);
+		}
+	}	
+	
+	/**
+	 * 
+	 * 描述: 
+	 * @author qye.zheng
+	 * 
+	 */
+	@Test
+	public void testWaitUnSync() {
+		// 线程1 wait，线程2执行完成后notify，线程1继续执行
+		try {
+			// 包含有 wait()，进入阻塞状态，
+			CounterThead counterThead1 = new CounterThead(commonObject, 6);
+			Thread t1 = new Thread(counterThead1);
+			t1.setName("thread-1");
+			// 访问另外一个同步方法，执行完了，notify其他wait的线程
+			CounterThead counterThead2 = new CounterThead(commonObject, 7);
+			Thread t2 = new Thread(counterThead2);
+			t2.setName("thread-2");
+			
+			t1.start();
+			/*
+			 * 这种启动方式，t1 / t2启动顺序不确定，
+			 * 为了验证的准确性，可以在t1启动后1秒再启动t2
+			 */
+			ThreadUtil.currentThreadSleep(1);
+			
+			t2.start();
+			
+			t1.join();
+			t2.join();
+			
+		} catch (Exception e) {
+			log.error("testWaitUnSync =====> ", e);
 		}
 	}	
 	

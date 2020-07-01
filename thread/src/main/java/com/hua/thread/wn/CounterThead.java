@@ -20,7 +20,7 @@ public class CounterThead implements Runnable
 	
 	/* 1-访问sync1(), 2-访问sync2(), 3-访问unsync() */
 	private int status;
-
+	
 	/**
 	 * 
 	 * @description 构造方法
@@ -65,10 +65,19 @@ public class CounterThead implements Runnable
 			break;
 
 		/* 访问非同步方法 */
-		case 20:
+		case 6:
 			// 访问非同步方法
-			commontObject.unsync();
-			break;			
+			commontObject.unsync6();
+			break;		
+			
+			/* 访问非同步方法 */
+			case 7:
+				// 访问非同步方法
+				commontObject.unsync7();
+				break;		
+			
+			default:
+				break;
 		}
 	}
 

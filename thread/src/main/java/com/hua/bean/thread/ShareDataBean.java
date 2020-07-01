@@ -67,7 +67,7 @@ public final class ShareDataBean extends BaseBean
 			System.out.println(Thread.currentThread().getName() + " 开始休眠");
 			System.out.println(Thread.currentThread().getName() + ": " + Thread.interrupted());
 			
-			Thread.sleep(8 * 1000);
+			Thread.sleep(3 * 1000);
 			
 			System.out.println(Thread.currentThread().getName() + " 停止休眠");
 			

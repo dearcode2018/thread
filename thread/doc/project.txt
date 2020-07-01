@@ -55,7 +55,9 @@ Thread.setDaemon(true); 在Thread.start()之前设置，在守护线程中构造
 10) 线程组
 ThreadGroup.setDeamon(true); 表示线程组中最后一个线程执行完成或被销毁时，该线程组自动销毁.
 
-
+15) 关系
+线程和线程之间，涉及 等待、通讯
+线程和资源之间，涉及 等待、资源(对象)锁、
 
 
 

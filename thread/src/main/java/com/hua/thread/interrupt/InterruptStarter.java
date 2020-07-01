@@ -34,7 +34,6 @@ public final class InterruptStarter
 		final Runnable mainTask = new MainTask();
 		final Thread mainTaskThread = new Thread(mainTask, "主任务");
 		mainTaskThread.start();
-		
 		// 设置等待时间，不是马上执行 interrupt操作
 		ThreadUtil.currentThreadSleep(3);
 		
@@ -44,8 +43,11 @@ public final class InterruptStarter
 		 */
 		mainTaskThread.interrupt();
 		
-		final int second = 20;
-		ThreadUtil.currentThreadSleep(second);
+		try {
+			mainTaskThread.join(); // 主线程等待它执行完成
+		} catch (InterruptedException e) { // 主线程被打断，捕获后将目标线程也打断
+			mainTaskThread.interrupt();
+		}
 	}
 
 }

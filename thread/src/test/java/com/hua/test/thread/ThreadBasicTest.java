@@ -233,29 +233,34 @@ public final class ThreadBasicTest extends BaseTest {
 			mainThread.getPriority();
 			System.out.println("mainThreadState = " + mainThread.getState());
 			
-			Runnable target = () -> System.out.println("do something...");
+			Runnable target = () -> {
+				// RUNNABLE
+				System.out.println("t1ThreadState3 = " +Thread.currentThread().getState());
+				System.out.println("do something...");
+			};
 			//Thread t1 = new Thread(target, "线程SunDay");
 			
 			Thread t1 = new Thread(target);
-			
+			// NEW
 			System.out.println("t1ThreadState1 = " + t1.getState());
 			
-			
 			t1.start();
+			// RUNNABLE
 			System.out.println("t1ThreadState2 = " + t1.getState());
+			t1.join();
+			
+			// TERMINATED
+			System.out.println("t1ThreadState4 = " + t1.getState());
 			//Callable<V>
-			System.out.println("isAlive = " + t1.isAlive());
-			System.out.println("id = " + t1.getId() + ", name = " + t1.getName() + ", priority = " + t1.getPriority());
+			//System.out.println("isAlive = " + t1.isAlive());
+			//System.out.println("id = " + t1.getId() + ", name = " + t1.getName() + ", priority = " + t1.getPriority());
 			t1.interrupt();
 			
 			//t1.wait(5000);
 			
-			System.out.println("t1ThreadState3 = " + t1.getState());
+			//System.out.println("isInterrupted = " + t1.isInterrupted());
 			
-			
-			System.out.println("isInterrupted = " + t1.isInterrupted());
-			
-			System.out.println("threadGroupActiveCount = " + Thread.activeCount());
+			//System.out.println("threadGroupActiveCount = " + Thread.activeCount());
 			
 			
 		} catch (Exception e) {
@@ -355,6 +360,52 @@ public final class ThreadBasicTest extends BaseTest {
 			
 		} catch (Exception e) {
 			log.error("testInterrupt2 =====> ", e);
+		}
+	}
+	
+	/**
+	 * 
+	 * 描述: 
+	 * @author qye.zheng
+	 * 
+	 */
+	//@DisplayName("test")
+	@Test
+	public void testInterrupt3() {
+		try {
+			Thread mainThread = Thread.currentThread();
+			System.out.println("主线程: id = " + mainThread.getId() + ", name = " + mainThread.getName() + ", priority = " + mainThread.getPriority());
+			
+			/*
+			 * 优先级，
+			 * MIN_PRIORITY
+			 * NORM_PRIORITY
+			 * MAX_PRIORITY
+			 */
+			mainThread.getPriority();
+			//System.out.println("mainThreadState = " + mainThread.getState());
+			
+			Runnable target = () -> {
+				System.out.println("ThreadBasicTest.testInterrupt3()");
+				try {
+					TimeUnit.SECONDS.sleep(30);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			};
+			
+			Thread t1 = new Thread(target);
+			
+			t1.start();
+			System.out.println("status1 = " + t1.getState());
+			t1.interrupt();
+			System.out.println("status2 = " + t1.getState());
+			System.out.println("isInterrupted = " + t1.isInterrupted());
+			
+			System.out.println("threadGroupActiveCount = " + Thread.activeCount());
+			
+		} catch (Exception e) {
+			log.error("testInterrupt3 =====> ", e);
 		}
 	}
 	
@@ -506,9 +557,9 @@ public final class ThreadBasicTest extends BaseTest {
 	 * 在主线程中运行一一个异步模块，不希望主线程提前结束，
 	 * 就可以采用join的方式
 	 * 
-	 * 可以设置阻塞超时时间，超过指定时间，就不在等待下去了.
+	 * 可以设置等待超时时间，超过指定时间，就不在等待下去了.
 	 * 
-	 * 线程对象A 构造了线程对象B，并且线程对象B调用join()，则线程对象A会阻塞直到线程B执行完成才继续执行
+	 * 线程对象A 构造了线程对象B，并且线程对象B调用join()，则线程对象A会一直等待线程B执行完成才继续执行或者等待指定时间
 	 */
 	
 	/**
@@ -531,10 +582,9 @@ public final class ThreadBasicTest extends BaseTest {
 			 * MAX_PRIORITY
 			 */
 			mainThread.getPriority();
-			System.out.println("mainThreadState = " + mainThread.getState());
-			
 			Runnable target = () -> {
 				System.out.println("do something...");
+				System.out.println("mainThread state = " + mainThread.getState());
 			};
 			
 			Thread t1 = new Thread(target);
@@ -719,10 +769,10 @@ public final class ThreadBasicTest extends BaseTest {
 			 * MAX_PRIORITY
 			 */
 			mainThread.getPriority();
-			System.out.println("mainThreadState = " + mainThread.getState());
-			
 			Runnable target = () -> {
 				System.out.println("do something...");
+				// TIMED_WAITING
+				System.out.println("mainThread state = " + mainThread.getState());
 				Thread t = Thread.currentThread();
 				if ("线程2".equals(t.getName())) {
 					System.out.println("线程2");

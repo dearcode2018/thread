@@ -6,6 +6,8 @@
  */
 package com.hua.task;
 
+import java.util.concurrent.TimeUnit;
+
 import com.hua.util.ThreadUtil;
 
  /**
@@ -30,8 +32,6 @@ public class MyTask implements Runnable
 		this.taskName = taskName;
 	}
 
-
-
 	/**
 	 * @description 
 	 * @author qianye.zheng
@@ -40,7 +40,11 @@ public class MyTask implements Runnable
 	public void run()
 	{
 		System.out.println("正在执行task: " + taskName);
-		ThreadUtil.currentThreadSleep(4);
+		try {
+			TimeUnit.MILLISECONDS.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		System.out.println("task: " + taskName + " 执行完毕");
 	}
 

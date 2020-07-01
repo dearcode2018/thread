@@ -43,11 +43,8 @@ public final class SleepStarter
 		final Runnable sleep = new SleepRunnable();
 		final Thread sleepThread = new Thread(sleep, "sleep 子线程");
 		
-		
 		sleepThread.start();
 		
-		System.out.println("自己打断自己的休眠");
-		// 自己打断自己的休眠
 		sleepThread.interrupt();
 		
 		// main线程打断自己

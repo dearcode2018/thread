@@ -42,8 +42,8 @@ public final class MainTask implements Runnable
 		} catch (InterruptedException e)
 		{
 			System.out.println("主任务中断该等待，不再等待辅助线程)");
-			// 被打断的线程会继续执行，只是主业务线程不再等待辅助业务线程了，而是打断后继续玩下执行
-			e.printStackTrace();
+			// 被打断的线程会继续执行，只是主业务线程不再等待辅助业务线程了，而是打断后继续执行
+			assistTaskThread.interrupt();
 		}
 		/*
 		 有可能超时，不再等待，这样如果共享的数据，可以知道

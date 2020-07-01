@@ -72,7 +72,7 @@ public class YieldThead implements Runnable
 		/* 访问非同步方法 */
 		case 20:
 			// 访问非同步方法
-			commontObject.unsync();
+			commontObject.unsync6();
 			break;			
 		}
 	}

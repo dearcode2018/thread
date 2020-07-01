@@ -20,6 +20,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -130,28 +132,26 @@ public final class ThreadTest extends BaseTest {
 			ThreadRunnable o1 = new ThreadRunnable();
 			o1.setShareData(shareData);
 			
-			ThreadRunnable o2 = new ThreadRunnable();
-			o2.setShareData(shareData);
+			//ThreadRunnable o2 = new ThreadRunnable();
+			//o2.setShareData(shareData);
 			
 			// 子线程，通过 Thread 来构造出一个子线程
-			subThread = new Thread(o1, "subThread");
-			Thread s2 = new Thread(o2, "subThread 2");
+			Thread thread1 = new Thread(o1, "Thread-1");
+			Thread thread2 = new Thread(o1, "Thread-2");
 			
 			// 启动子线程
-			subThread.start();
+			thread1.start();
 			
-			Thread.sleep(1 * 1000);
+			TimeUnit.MILLISECONDS.sleep(500);
 			
-			s2.start();
+			thread2.start();
+			
+			TimeUnit.MILLISECONDS.sleep(1000);
 			
 			System.out.println("打断第一个子线程的休眠，让其开始继续干活");
-			/*
-			 打断第一个子线程的休眠，让其开始继续干活
-			 */
-			s2.interrupt();
 			
-			// 主线程休眠
-			Thread.sleep(15 * 1000);
+			thread1.join();
+			thread2.join();
 			
 		} catch (Exception e) {
 			log.error("testInterrupt =====> ", e);

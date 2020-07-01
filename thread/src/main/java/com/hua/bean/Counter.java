@@ -6,7 +6,9 @@
  */
 package com.hua.bean;
 
- /**
+import com.fasterxml.jackson.databind.ObjectWriter;
+
+/**
  * @type Counter
  * @description 计数器
  * @author qianye.zheng
@@ -31,6 +33,8 @@ public class Counter
 	
 	/*  */
 	public static volatile int countWithVolatile = 0;
+	
+	private Object lock = new Object();
 	
 	/**
 	 * 
@@ -112,7 +116,7 @@ public class Counter
 	 * @description 同步方法3
 	 * @author qianye.zheng
 	 */
-	public synchronized void sync3()
+	public void sync3()
 	{
 		System.out.println("线程: " + Thread.currentThread().getName() + ", 正在访问sync3()方法");
 		/**
@@ -126,10 +130,17 @@ public class Counter
 		try
 		{
 			System.out.println("线程: " + Thread.currentThread().getName() + ", wait()");
-			this.wait();
-			System.out.println("线程: " + Thread.currentThread().getName() + " 现场恢复");
+			/*
+			 * this.wait(); 不要用当前对象作为锁，另声明一个对象作为锁，才能正确使用wait/notify功能
+			 * 因为用this作为锁，而当前方法又是同步方法，又需要锁才能进的来，因此interrupt/wait超时都不起作用
+			 */
+			synchronized (lock) {
+				lock.wait(3000);
+				System.out.println("线程: " + Thread.currentThread().getName() + " 现场恢复");
+			}
 		} catch (InterruptedException e)
 		{
+			System.out.println("被中断...");
 			e.printStackTrace();
 		}
 		System.out.println("sync3()方法end");
@@ -140,7 +151,7 @@ public class Counter
 	 * @description 同步方法4
 	 * @author qianye.zheng
 	 */
-	public synchronized void sync4()
+	public void sync4()
 	{
 		System.out.println("线程: " + Thread.currentThread().getName() + ", 正在访问sync4()方法");
 		/**
@@ -150,15 +161,20 @@ public class Counter
 		// 当前子线程休眠
 		try
 		{
-			Thread.sleep(7 * 1000);
+			Thread.sleep(3 * 1000);
 		} catch (InterruptedException e)
 		{
 			e.printStackTrace();
 		}
-		//
-		this.notify();
+		/*
+		 * 唤醒该同步锁上等待队列的某个线程，但不是此刻释放锁
+		 * 是等待此方法执行完毕后，再释放锁
+		 */
+		synchronized (lock) {
+			lock.notify();
+		}
 		System.out.println("休眠正常结束");
-		
+
 		System.out.println("sync4()方法end");
 	}
 	
@@ -188,10 +204,20 @@ public class Counter
 	 * @description 非同步方法
 	 * @author qianye.zheng
 	 */
-	public void unsync()
+	public void unsync6()
 	{
-		System.out.println("线程: " + Thread.currentThread().getName() + ", 正在访问unsync()方法");
-		
+		System.out.println("线程: " + Thread.currentThread().getName() + ", 正在访问unsync6()方法");
+		System.out.println("unsync()方法end");
+	}
+	
+	/**
+	 * 
+	 * @description 非同步方法
+	 * @author qianye.zheng
+	 */
+	public void unsync7()
+	{
+		System.out.println("线程: " + Thread.currentThread().getName() + ", 正在访问unsync7()方法");
 		System.out.println("unsync()方法end");
 	}
 }

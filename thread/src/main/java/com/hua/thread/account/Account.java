@@ -37,7 +37,7 @@ public final class Account {
 		if (empty)
 		{ // 帐户没钱
 			System.out.println("存钱，" + Thread.currentThread().getName() + " 存款值: " + depositAmount.doubleValue());
-			balance += depositAmount;
+			balance = depositAmount;
 			// 帐户不为空
 			empty = false;
 			this.notify();
@@ -78,8 +78,9 @@ public final class Account {
 			}
 		} else
 		{ // 帐户有钱
-			System.out.println("取钱，" + Thread.currentThread().getName() + " 取款值: " + ((balance - drawAmount) > 0 ? drawAmount : balance));
-			balance -= drawAmount;
+			final double drawVal = ((balance - drawAmount) > 0 ? drawAmount : balance);
+			System.out.println("取钱，" + Thread.currentThread().getName() + " 取款值: " + drawVal);
+			balance -= drawVal;
 			if (balance <= 0)
 			{
 				balance = 0.0;

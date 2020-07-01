@@ -5,8 +5,6 @@
  */
 package com.hua.thread.eg;
 
-import com.hua.util.ThreadUtil;
-
 /**
  * EggDriver
  * 描述: 
@@ -38,7 +36,6 @@ public final class EggDriver
 		// 竞争、公共资源
 		final EggPlate eggPlate = new EggPlate();
 		
-		
 		final Runnable eggProducer1 = new EggProducer(eggPlate);
 		final Runnable eggConsumer1 = new EggConsumer(eggPlate);
 		
@@ -62,8 +59,12 @@ public final class EggDriver
 		eggProducerThread2.start();
 		eggConsumerThread2.start();
 		
-		final int second = 5;
-		ThreadUtil.currentThreadSleep(second);
+		try {
+			eggProducerThread1.join();
+			eggProducerThread2.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		
 	}
 

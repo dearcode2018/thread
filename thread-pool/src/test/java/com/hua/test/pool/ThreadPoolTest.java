@@ -57,11 +57,11 @@ public final class ThreadPoolTest extends BaseTest {
 	private static void threadPool() {
 		try {
 			/**
-			 * 1) 当线程池中的任务数大于corePoolSize时，新增的任务会放入任务缓存队列中
+			 * 1) 当线程池中的任务数大于corePoolSize时，新增的任务会放入队列中
 			 * 
-			 * 2) 当任务缓存队列满了之后，便创建新的线程
+			 * 2) 当存队列满了之后，便创建新的线程
 			 * 
-			 * 3) 当创建的最大线程数超过maxPoolSize时，就会抛出任务拒绝异常
+			 * 3) 当创建的最大线程数超过maxPoolSize时，就会执行拒绝策略，默认是AbortPolicy
 			 * 
 			 */
 			int corePoolSize = 5;
@@ -83,7 +83,7 @@ public final class ThreadPoolTest extends BaseTest {
 			}
 			
 			// 关闭线程池
-			executor.shutdown();
+			//executor.shutdown();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -228,7 +228,20 @@ public final class ThreadPoolTest extends BaseTest {
 	@Test
 	public void testTemp() {
 		try {
+			BlockingQueue<String> blockQueue = new ArrayBlockingQueue<>(2);
+			blockQueue.offer("12");
+			blockQueue.offer("abc2");
+			// 超出队列大小，不再添加，offer不抛异常，add会抛异常
+			//blockQueue.offer("w2oiosjdk");
+			// 异常: java.lang.IllegalStateException: Queue full
+			//blockQueue.add("w2oiosjdk");
 			
+			System.out.println(blockQueue.size());
+			while (!blockQueue.isEmpty()) {
+				System.out.println(blockQueue.poll());
+			}
+			
+			System.out.println(Runtime.getRuntime().availableProcessors());
 			
 		} catch (Exception e) {
 			log.error("testTemp=====> ", e);

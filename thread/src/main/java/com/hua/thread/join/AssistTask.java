@@ -25,8 +25,9 @@ public class AssistTask implements Runnable
 		{
 			Thread.sleep(8 * 1000);
 		} catch (InterruptedException e)
-		{
-			e.printStackTrace();
+		{// 被打断
+			System.out.println("主动打断当前线程");
+			Thread.currentThread().interrupt();
 		}
 		System.out.println("辅助任务结束");
 	}
