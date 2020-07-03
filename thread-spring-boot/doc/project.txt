@@ -1,6 +1,6 @@
 【项目信息】
-项目名称 : spring
-中文名称 : Spring
+项目名称 : 
+中文名称 : 工作执行器-线程池
 项目版本 : version 1.0
 
 主要技术 : 
@@ -13,8 +13,21 @@
 
 1)
 
-2)
+2) 自动配置
+org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
 
+配置-示例
+# 工作执行器-线程池
+spring.task.execution.threadNamePrefix=task-
+spring.task.execution.pool.core-size=5
+spring.task.execution.pool.max-size=10
+spring.task.execution.pool.keepAlive=120s
+spring.task.execution.pool.queue-capacity=200
+spring.task.execution.pool.allow-core-thread-timeout=false
+# 线程池关闭时是否等待定期任务执行完毕
+spring.task.execution.shutdown.awaitTermination=false
+# 最大等待现有任务完成时间
+spring.task.execution.shutdown.awaitTerminationPeriod=60s
 3)
 
 4)
@@ -22,8 +35,24 @@
 5)
 
 
+源码过程 (工作执行器，定时执行器也同理)
+1) ThreadPoolTaskExecutor
+org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
+ThreadPoolTaskExecutor封装了java.util.concurrent.ThreadPoolExecutor
 
+2) 非阻塞
+org.springframework.util.concurrent.ListenableFutureTask.done() 覆盖了 java.util.concurrent.FutureTask.done()
+执行完成后，回调done()方法，最终逐个执行callback队列中 成功/失败回调方法
+3) 阻塞执行
+调用Future.get()方法即可实现
 
+4) 
+
+10) 自动配置
+TaskExecutionAutoConfiguration
+org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
+初始化org.springframework.scheduling.concurrent.ExecutorConfigurationSupport.initialize() 
+初始化ThreadFactory/RejectedExecutionHandler，要修改可通过@Bean 把TaskExecutorCustomizer/TaskDecorator 2个对象 注入容器
 
 
 
