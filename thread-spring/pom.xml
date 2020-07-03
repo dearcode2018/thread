@@ -21,7 +21,7 @@
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 		<spring.data.jpa.version>1.7.2.RELEASE</spring.data.jpa.version>
 		<spring.ws.version>2.2.0.RELEASE</spring.ws.version>
-		<spring.xml.version>2.2.0.RELEASE</spring.xml.version>		
+		<spring.xml.version>2.4.5.RELEASE</spring.xml.version>		
 	</properties>
 
 	<dependencies>
